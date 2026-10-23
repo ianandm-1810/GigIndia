@@ -9,7 +9,7 @@ import { getErrorMessage } from '../utils/errors.js'
 
 const whatsappNumber = (import.meta.env.VITE_SUPPORT_WHATSAPP_NUMBER || '').replace(/\D/g, '')
 const whatsappLink = whatsappNumber.length >= 8 && whatsappNumber.length <= 15
-  ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi GIGI India Support, I need help with: ')}`
+  ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi GIG INDIA Support, I need help with: ')}`
   : ''
 
 export default function SupportPage() {
@@ -48,7 +48,7 @@ export default function SupportPage() {
       <header className="page-heading support-heading">
         <div>
           <p className="eyebrow">Here for students and clients</p>
-          <h1>Talk to GIGI India.</h1>
+          <h1>Talk to GIG INDIA.</h1>
           <p className="page-lede">Need help with an account, a gig, or your private project chat? Send us a message and our support team will get back to you.</p>
         </div>
       </header>
@@ -61,11 +61,11 @@ export default function SupportPage() {
             <h2>Chat with support</h2>
             {whatsappLink ? (
               <>
-                <p>Open a WhatsApp conversation with GIGI India Support. Please don’t share passwords or payment secrets in chat.</p>
+                <p>Open a WhatsApp conversation with GIG INDIA Support. Please don’t share passwords or payment secrets in chat.</p>
                 <a className="button button-primary button-medium support-whatsapp-button" href={whatsappLink} target="_blank" rel="noreferrer">Message us on WhatsApp <span aria-hidden="true">↗</span></a>
               </>
             ) : (
-              <p>WhatsApp support will appear here once GIGI India’s public WhatsApp Business number is configured.</p>
+              <p>WhatsApp support will appear here once GIG INDIA’s public WhatsApp Business number is configured.</p>
             )}
           </article>
 
@@ -73,7 +73,7 @@ export default function SupportPage() {
             <span className="support-icon"><Mail size={20} /></span>
             <p className="eyebrow">Email</p>
             <h2>Send a support request</h2>
-            <p>Use the form and we’ll route your message to the GIGI India support inbox.</p>
+            <p>Use the form and we’ll route your message to the GIG INDIA support inbox.</p>
           </article>
 
           <p className="support-privacy-note"><ShieldCheck size={17} /><span>Your request is sent privately to our support inbox. Project work and files should stay in the gig’s private chat.</span></p>
@@ -85,7 +85,7 @@ export default function SupportPage() {
             <h2 id="support-form-title">How can we help?</h2>
           </div>
           {sent ? (
-            <div className="success-panel" role="status"><Mail size={20} /><div><strong>Message sent</strong><p>Thanks for contacting GIGI India. Our support team will reply to the email address you provided.</p><Link to="/">Back to GIGI India</Link></div></div>
+            <div className="success-panel" role="status"><Mail size={20} /><div><strong>Message sent</strong><p>Thanks for contacting GIG INDIA. Our support team will reply to the email address you provided.</p><Link to="/">Back to GIG INDIA</Link></div></div>
           ) : (
             <form className="form-stack" onSubmit={submit}>
               {error && <div className="form-alert" role="alert">{error}</div>}
@@ -93,7 +93,7 @@ export default function SupportPage() {
               <Field label="Email address" id="support-email" name="email" type="email" autoComplete="email" value={form.email} onChange={updateField} required />
               <div className="support-form-row">
                 <div className="form-field">
-                  <label className="field-label" htmlFor="support-role">I’m using GIGI India as</label>
+                  <label className="field-label" htmlFor="support-role">I’m using GIG INDIA as</label>
                   <select className="field-input" id="support-role" name="role" value={form.role} onChange={updateField}>
                     <option value="student">Student</option>
                     <option value="client">Client</option>

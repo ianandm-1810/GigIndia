@@ -80,7 +80,7 @@ export default function ProfilePage() {
 
   async function deleteAccount(event) {
     event.preventDefault()
-    if (!window.confirm('Delete your GIGI India account? This action cannot be undone.')) return
+    if (!window.confirm('Delete your GIG INDIA account? This action cannot be undone.')) return
     setBusy('delete-account')
     try {
       await apiClient.delete('/auth/delete-account', { data: { password: accountPassword } })
@@ -108,7 +108,7 @@ export default function ProfilePage() {
           <input ref={photoInput} className="sr-only" type="file" accept="image/jpeg,image/png" onChange={uploadPhoto} />
           <div className="profile-facts"><div><span>College / organization</span><strong>{user?.college || 'Not added'}</strong></div><div><span>Member since</span><strong>{user?.createdAt ? new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(user.createdAt)) : '—'}</strong></div><div><span>Account email</span><strong>{user?.email}</strong></div></div>
           <div className="profile-skills"><h3><UserRound size={17} /> About your account</h3><p>{user?.bio || 'A profile bio and editable skills will be available when profile update endpoints are added.'}</p>{Array.isArray(user?.skills) && user.skills.length > 0 && <div className="skill-list">{user.skills.map((skill) => <span key={skill}>{skill}</span>)}</div>}</div>
-          <p className="subtle-note"><ShieldAlert size={16} /> Your profile details are loaded from GIGI India. This screen does not pretend to save fields the backend cannot update.</p>
+          <p className="subtle-note"><ShieldAlert size={16} /> Your profile details are loaded from GIG INDIA. This screen does not pretend to save fields the backend cannot update.</p>
         </Card>
 
         <Card className="portfolio-card">

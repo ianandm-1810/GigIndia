@@ -126,7 +126,7 @@ export default function GigDetailPage() {
         <article className="gig-detail-main">
           <div className="gig-detail-top"><span className="category-chip">{gig.category?.replaceAll('-', ' ')}</span><Badge status={gig.status} /></div>
           <PageHeading title={gig.title} description={gig.description} />
-          <div className="gig-detail-meta"><div><span>Budget</span><strong>{formatRupees(gig.budget)}</strong></div><div><span>Deadline</span><strong><CalendarDays size={16} />{formatDate(gig.deadline)}</strong></div><div><span>Posted by</span><strong>{gig.client?.name || 'GIGI India client'}</strong></div></div>
+          <div className="gig-detail-meta"><div><span>Budget</span><strong>{formatRupees(gig.budget)}</strong></div><div><span>Deadline</span><strong><CalendarDays size={16} />{formatDate(gig.deadline)}</strong></div><div><span>Posted by</span><strong>{gig.client?.name || 'GIG INDIA client'}</strong></div></div>
           {gig.client?.college && <p className="college-line">{gig.client.college}</p>}
           {canChat && <Button to={'/chat/' + gig._id} variant="secondary"><MessageCircle size={17} /> Open project chat</Button>}
           {isOwner && gig.status === 'open' && <Button variant="danger-ghost" onClick={deleteGig} loading={busy}><Trash2 size={16} /> Delete gig</Button>}

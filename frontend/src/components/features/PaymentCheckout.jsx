@@ -31,7 +31,7 @@ export default function PaymentCheckout({ gig, onPaymentVerified }) {
         key: order.keyId,
         amount: order.amount,
         currency: order.currency,
-        name: 'GIGI India',
+        name: 'GIG INDIA',
         description: 'Payment for ' + gig.title,
         order_id: order.orderId,
         prefill: {

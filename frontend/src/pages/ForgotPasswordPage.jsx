@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
   return (
     <AuthPanel eyebrow="Account recovery" title="Get back to your work." description="We’ll send a password reset link to the email address on your account." footer={<Link to="/login">Back to log in</Link>}>
       <div className="auth-form-heading"><p className="eyebrow">Password help</p><h2>Forgot password?</h2><p>Enter the email you used to create your account.</p></div>
-      {sent ? <div className="success-panel" role="status"><strong>Check your inbox</strong><p>If the email belongs to a GIGI India account, a reset link has been sent. The link expires in 10 minutes.</p></div> : <form className="form-stack" onSubmit={submit}>{error && <div className="form-alert" role="alert">{error}</div>}<Field label="Email address" id="forgot-email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required /><Button type="submit" size="large" loading={loading}>Send reset link</Button></form>}
+      {sent ? <div className="success-panel" role="status"><strong>Check your inbox</strong><p>If the email belongs to a GIG INDIA account, a reset link has been sent. The link expires in 10 minutes.</p></div> : <form className="form-stack" onSubmit={submit}>{error && <div className="form-alert" role="alert">{error}</div>}<Field label="Email address" id="forgot-email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required /><Button type="submit" size="large" loading={loading}>Send reset link</Button></form>}
     </AuthPanel>
   )
 }

@@ -25,7 +25,7 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       const user = await register(form)
-      showToast('Your GIGI India account is ready.')
+      showToast('Your GIG INDIA account is ready.')
       navigate(user.role === 'client' ? '/client' : '/student', { replace: true })
     } catch (requestError) {
       setError(getErrorMessage(requestError, 'Could not create your account. Please try again.'))
@@ -34,7 +34,7 @@ export default function RegisterPage() {
 
   return (
     <AuthPanel eyebrow="Start small, go far" title="Make room for what you can do." description="Create a profile, find projects that fit around college, and build experience one gig at a time." footer={<>Already joined? <Link to="/login">Log in</Link></>}>
-      <div className="auth-form-heading"><p className="eyebrow">Create your account</p><h2>Join GIGI India</h2><p>Choose how you want to use the marketplace.</p></div>
+      <div className="auth-form-heading"><p className="eyebrow">Create your account</p><h2>Join GIG INDIA</h2><p>Choose how you want to use the marketplace.</p></div>
       <form className="form-stack" onSubmit={submit}>
         {error && <div className="form-alert" role="alert">{error}</div>}
         <div className="role-picker" role="radiogroup" aria-label="Account type">

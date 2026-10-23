@@ -49,7 +49,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/gigs", gigRoutes);
 
 app.get("/", (req, res) => {
-  res.json({ message: "GIGI India API is running 🚀" });
+  res.json({ message: "GIG INDIA API is running 🚀" });
 });
 // Custom 404 — koi bhi route match nahi hua
 app.use((req, res) => {

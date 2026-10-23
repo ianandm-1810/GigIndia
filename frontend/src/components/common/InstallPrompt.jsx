@@ -23,8 +23,8 @@ export default function InstallPrompt() {
   if (!installEvent || dismissed) return null
 
   return (
-    <aside className="install-prompt" aria-label="Install GIGI India">
-      <span><Download size={18} /> Add GIGI India to your home screen for quicker access.</span>
+    <aside className="install-prompt" aria-label="Install GIG INDIA">
+      <span><Download size={18} /> Add GIG INDIA to your home screen for quicker access.</span>
       <button type="button" className="button button-primary button-small" onClick={installApp}>Install</button>
       <button type="button" className="icon-button" onClick={() => setDismissed(true)} aria-label="Dismiss install suggestion"><X size={16} /></button>
     </aside>

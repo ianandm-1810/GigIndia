@@ -19,7 +19,7 @@ const escapeHtml = (value = "") => String(value).replace(/[&<>\"']/g, (character
 const sendEmail = async (to, subject, html, options = {}) => {
   try {
     await transporter.sendMail({
-      from: `\"GIGI India\" <${process.env.EMAIL_USER}>`,
+      from: `\"GIG INDIA\" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
@@ -35,7 +35,7 @@ const sendEmail = async (to, subject, html, options = {}) => {
 const emailTemplates = {
   passwordReset: (resetUrl) => `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #7954f4;">GIGI India Password Reset</h2>
+      <h2 style="color: #7954f4;">GIG INDIA Password Reset</h2>
       <p>Tumne password reset request ki hai.</p>
       <p>Neeche wale button pe click karo:</p>
       <a href="${escapeHtml(resetUrl)}"
@@ -53,11 +53,11 @@ const emailTemplates = {
   `,
   proposalAccepted: (gigTitle, chatUrl) => `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #17131b;">
-      <h2>Good news from GIGI India</h2>
+      <h2>Good news from GIG INDIA</h2>
       <p>Your proposal for <strong>${escapeHtml(gigTitle)}</strong> was accepted.</p>
       <p>Your private project chat is ready. Only you and the client assigned to this gig can access it.</p>
       <p><a href="${escapeHtml(chatUrl)}" style="display:inline-block;padding:12px 20px;border-radius:8px;background:#7954f4;color:#fff;text-decoration:none;font-weight:bold;">Open project chat</a></p>
-      <p>If you are not signed in, log in with your GIGI India account first, then open this link again.</p>
+      <p>If you are not signed in, log in with your GIG INDIA account first, then open this link again.</p>
     </div>
   `
 };
@@ -75,10 +75,10 @@ const sendSupportEmail = async ({ name, email, role, topic, message }) => {
   const safeMessage = escapeHtml(message).replace(/\r?\n/g, "<br>");
 
   await transporter.sendMail({
-    from: `\"GIGI India Support\" <${process.env.EMAIL_USER}>`,
+    from: `\"GIG INDIA Support\" <${process.env.EMAIL_USER}>`,
     to: recipient,
     replyTo: email,
-    subject: `[GIGI India support] ${topic}`,
+    subject: `[GIG INDIA support] ${topic}`,
     html: `<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#17131b"><h2>New support request</h2><p><b>Name:</b> ${safeName}</p><p><b>Email:</b> ${safeEmail}</p><p><b>Account type:</b> ${safeRole}</p><p><b>Topic:</b> ${safeTopic}</p><p><b>Message:</b></p><p>${safeMessage}</p></div>`
   });
 };

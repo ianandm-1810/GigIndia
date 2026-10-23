@@ -201,7 +201,7 @@ const resolveDispute = async (req, res) => {
     } else {
       result = await refundPayment(payment._id, {
         allowedStatuses: ["disputed"],
-        reason: note.trim() || "GIGI India admin dispute resolution"
+        reason: note.trim() || "GIG INDIA admin dispute resolution"
       });
     }
 

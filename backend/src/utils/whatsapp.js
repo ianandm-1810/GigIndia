@@ -22,19 +22,19 @@ const sendWhatsApp = async (to, message) => {
 // Ready made messages
 const messages = {
   proposalReceived: (gigTitle) =>
-    `🎉 GIGI India: New proposal received on your gig "${gigTitle}". Log in to review it.`,
+    `🎉 GIG INDIA: New proposal received on your gig "${gigTitle}". Log in to review it.`,
 
   proposalAccepted: (gigTitle) =>
-    `✅ GIGI India: Your proposal was accepted for "${gigTitle}". Open GIGI India to start working.`,
+    `✅ GIG INDIA: Your proposal was accepted for "${gigTitle}". Open GIG INDIA to start working.`,
 
   paymentReceived: (amount) =>
-    `💰 GIGI India: ₹${amount} has been released to your account. Great work!`,
+    `💰 GIG INDIA: ₹${amount} has been released to your account. Great work!`,
 
   gigCompleted: (gigTitle) =>
-    `🏆 GIGI India: Gig "${gigTitle}" marked complete. Leave a review!`,
+    `🏆 GIG INDIA: Gig "${gigTitle}" marked complete. Leave a review!`,
 
   paymentEscrowed: (gigTitle, amount) =>
-    `🔒 GIGI India: ₹${amount} is now in escrow for "${gigTitle}". Work can begin!`
+    `🔒 GIG INDIA: ₹${amount} is now in escrow for "${gigTitle}". Work can begin!`
 };
 
 module.exports = { sendWhatsApp, messages };

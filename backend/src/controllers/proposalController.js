@@ -111,7 +111,7 @@ const acceptProposal = async (req, res) => {
       try {
         await sendEmail(
           student.email,
-          "Your GIGI India proposal was accepted",
+          "Your GIG INDIA proposal was accepted",
           emailTemplates.proposalAccepted(gig.title, chatUrl)
         );
       } catch (emailError) {

@@ -9,7 +9,7 @@ const createSupportRequest = async (req, res) => {
 
   try {
     await sendSupportEmail(req.body);
-    return res.status(202).json({ message: "Your message has been sent to GIGI India Support" });
+    return res.status(202).json({ message: "Your message has been sent to GIG INDIA Support" });
   } catch (error) {
     console.error(`Support request email failed: ${error.message}`);
     return res.status(503).json({ message: "Email support is temporarily unavailable. Please try again later." });

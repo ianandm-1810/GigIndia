@@ -32,8 +32,8 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthPanel eyebrow="Welcome back" title="Your next chapter is waiting." description="Sign in to pick up where you left off and keep your work moving." footer={<>New to GIGI India? <Link to="/register">Create your account</Link></>}>
-      <div className="auth-form-heading"><p className="eyebrow">Account access</p><h2>Log in</h2><p>Use the email and password for your GIGI India account.</p></div>
+    <AuthPanel eyebrow="Welcome back" title="Your next chapter is waiting." description="Sign in to pick up where you left off and keep your work moving." footer={<>New to GIG INDIA? <Link to="/register">Create your account</Link></>}>
+      <div className="auth-form-heading"><p className="eyebrow">Account access</p><h2>Log in</h2><p>Use the email and password for your GIG INDIA account.</p></div>
       <form className="form-stack" onSubmit={submit}>
         {error && <div className="form-alert" role="alert">{error}</div>}
         <Field label="Email address" id="login-email" type="email" name="email" autoComplete="email" value={form.email} onChange={update} required />

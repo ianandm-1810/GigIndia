@@ -44,9 +44,9 @@ export default function AppShell() {
       </div>
       <header className="site-header">
         <div className="header-inner">
-          <Link className="brand-lockup" to="/" aria-label="GIGI India home">
+          <Link className="brand-lockup" to="/" aria-label="GIG INDIA home">
             <span className="brand-mark" aria-hidden="true">G</span>
-            <span className="brand-word"><strong className="brand-name">GIGI</strong><span>India</span></span>
+            <span className="brand-word"><strong className="brand-name">GIG</strong><span>INDIA</span></span>
           </Link>
           <button className="icon-button mobile-menu-toggle" type="button" aria-expanded={menuOpen} aria-controls="primary-navigation" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} onClick={() => setMenuOpen((open) => !open)}>
             {menuOpen ? <X size={21} /> : <Menu size={21} />}
@@ -69,7 +69,7 @@ export default function AppShell() {
             ) : (
               <>
                 <Button variant="ghost" size="small" to="/login">Log in</Button>
-                <Button variant="primary" size="small" to="/register">Join GIGI India <span aria-hidden="true">↗</span></Button>
+                <Button variant="primary" size="small" to="/register">Join GIG INDIA <span aria-hidden="true">↗</span></Button>
               </>
             )}
           </div>
@@ -80,10 +80,10 @@ export default function AppShell() {
       </main>
       <footer className="site-footer">
         <div className="footer-inner">
-          <Link className="brand-lockup footer-brand" to="/" aria-label="GIGI India home"><span className="brand-mark" aria-hidden="true">G</span><span className="brand-word"><strong className="brand-name">GIGI</strong><span>India</span></span></Link>
+          <Link className="brand-lockup footer-brand" to="/" aria-label="GIG INDIA home"><span className="brand-mark" aria-hidden="true">G</span><span className="brand-word"><strong className="brand-name">GIG</strong><span>INDIA</span></span></Link>
           <p>Small projects. Real momentum.</p>
           <div className="footer-links"><Link to="/support">Help &amp; Support</Link><Link to="/privacy-policy">Privacy</Link><Link to="/terms">Terms</Link><Link to="/about">How it works</Link></div>
-          <small>© {currentYear} GIGI India</small>
+          <small>© {currentYear} GIG INDIA</small>
         </div>
       </footer>
       <nav className="mobile-tabbar" aria-label="Mobile navigation">

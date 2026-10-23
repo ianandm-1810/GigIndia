@@ -1,6 +1,6 @@
-# GIGI India frontend
+# GIG INDIA frontend
 
-Mobile-first React app for the GIGI India student freelance marketplace. The UI uses the existing Express API and keeps product limitations visible instead of implying features the API does not provide.
+Mobile-first React app for the GIG INDIA student freelance marketplace. The UI uses the existing Express API and keeps product limitations visible instead of implying features the API does not provide.
 
 ## Run locally
 
@@ -15,7 +15,7 @@ The frontend environment values are public configuration only. Do not put Razorp
 
 - `VITE_API_URL`: backend API base URL; defaults to `http://localhost:5000/api`.
 - `VITE_SOCKET_URL`: Socket.IO server URL; defaults to `http://localhost:5000`.
-- `VITE_SUPPORT_WHATSAPP_NUMBER`: public GIGI India WhatsApp support number, digits only with country code. Configure the public WhatsApp Business number connected to your support workflow; the Twilio sandbox number is only for opted-in testing.
+- `VITE_SUPPORT_WHATSAPP_NUMBER`: public GIG INDIA WhatsApp support number, digits only with country code. Configure the public WhatsApp Business number connected to your support workflow; the Twilio sandbox number is only for opted-in testing.
 
 The `/support` page sends student and client requests through the backend's existing Gmail/Nodemailer service. On the backend, set `SUPPORT_EMAIL` to choose the receiving inbox; if it is blank, requests go to `EMAIL_USER`. The backend also needs its existing `EMAIL_USER` and `EMAIL_PASS` credentials configured.
 
