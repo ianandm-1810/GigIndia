@@ -21,6 +21,8 @@ const RegisterPage = lazy(() => import('../pages/RegisterPage.jsx'))
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage.jsx'))
 const SupportPage = lazy(() => import('../pages/SupportPage.jsx'))
 const StudentDashboardPage = lazy(() => import('../pages/StudentDashboardPage.jsx'))
+const StudentChatsPage = lazy(() => import('../pages/StudentChatsPage.jsx'))
+const StudentProfilePage = lazy(() => import('../pages/StudentProfilePage.jsx'))
 const TermsPage = lazy(() => import('../pages/TermsPage.jsx'))
 
 export default function AppRoutes() {
@@ -48,11 +50,13 @@ export default function AppRoutes() {
 
         <Route element={<ProtectedRoute allowedRoles={['student']} />}>
           <Route path="student" element={<StudentDashboardPage />} />
+          <Route path="student-chats" element={<StudentChatsPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={['client']} />}>
           <Route path="client" element={<ClientDashboardPage />} />
           <Route path="post-gig" element={<PostGigPage />} />
+          <Route path="students/:username" element={<StudentProfilePage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>

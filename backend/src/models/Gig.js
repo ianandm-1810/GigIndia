@@ -21,6 +21,11 @@ const gigSchema = new mongoose.Schema({
     required: true,
     min: 100
   },
+  agreedAmount: {
+    type: Number,
+    min: 100,
+    default: null
+  },
   deadline: {
     type: Date,
     required: true
@@ -37,14 +42,33 @@ const gigSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["open", "in-progress", "submitted", "completed", "disputed", "cancelled"],
+    enum: ["open", "in-progress", "submitted", "pending-admin-approval", "payout-processing", "completed", "disputed", "cancelled"],
     default: "open"
   },
   attachments: [String],
+  isRemoved: {
+    type: Boolean,
+    default: false
+  },
+  removedAt: {
+    type: Date,
+    default: null
+  },
+  removedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  },
   submissionNote: {
     type: String,
     trim: true,
     maxlength: 2000,
+    default: ""
+  },
+  submissionLink: {
+    type: String,
+    trim: true,
+    maxlength: 2048,
     default: ""
   },
   submissionAttachments: {
@@ -56,6 +80,14 @@ const gigSchema = new mongoose.Schema({
     default: null
   },
   completedAt: {
+    type: Date,
+    default: null
+  },
+  closedAt: {
+    type: Date,
+    default: null
+  },
+  clientClosedAt: {
     type: Date,
     default: null
   },
@@ -82,7 +114,7 @@ const gigSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ["pending", "escrowed", "released", "refunded"],
+    enum: ["pending", "paid", "escrowed", "released", "refunded"],
     default: "pending"
   },
   razorpayOrderId: {

@@ -6,6 +6,7 @@ import Badge from '../common/Badge.jsx'
 export default function GigCard({ gig }) {
   const clientName = gig.client?.name || 'GIG INDIA client'
   const initial = clientName.trim().slice(0, 1).toUpperCase()
+  const isOpen = gig.status === 'open'
 
   return (
     <article className="gig-card">
@@ -17,6 +18,7 @@ export default function GigCard({ gig }) {
         <h2>{gig.title}</h2><ArrowUpRight size={19} aria-hidden="true" />
       </Link>
       <p className="gig-card-description">{gig.description}</p>
+      {!isOpen && <p className="gig-card-closed-note">{['completed', 'cancelled'].includes(gig.status) ? 'Past listing · no longer accepting proposals' : 'Listing closed to new proposals'}</p>}
       <div className="gig-card-meta">
         <span className="client-avatar" aria-hidden="true">{initial}</span>
         <span>{clientName}</span>
@@ -25,7 +27,7 @@ export default function GigCard({ gig }) {
       </div>
       <div className="gig-card-bottom">
         <strong>{formatRupees(gig.budget)}</strong>
-        <span><CalendarDays size={15} aria-hidden="true" /> Due {formatDate(gig.deadline)}</span>
+        <span><CalendarDays size={15} aria-hidden="true" /> {isOpen ? 'Due ' : 'Deadline was '}{formatDate(gig.deadline)}</span>
       </div>
     </article>
   )

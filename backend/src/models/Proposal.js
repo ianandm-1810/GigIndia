@@ -28,8 +28,12 @@ const proposalSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "accepted", "rejected"],
+    enum: ["pending", "accepted", "rejected", "withdrawn"],
     default: "pending"
+  },
+  unappliedAt: {
+    type: Date,
+    default: null
   }
 }, { timestamps: true });
 

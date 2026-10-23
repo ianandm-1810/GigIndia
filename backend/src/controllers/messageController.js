@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Gig = require("../models/Gig");
 const Message = require("../models/Message");
+const { getChatAccess } = require("../utils/chatAccess");
 
 // @route GET /api/messages/:gigId
 const getGigMessages = async (req, res) => {
@@ -18,6 +19,13 @@ const getGigMessages = async (req, res) => {
     const isAssignedStudent = gig.assignedTo && gig.assignedTo.toString() === req.user._id.toString();
     if (!isClient && !isAssignedStudent) {
       return res.status(403).json({ message: "Not authorized to view this chat" });
+    }
+    const chatAccess = getChatAccess(gig);
+    if (!chatAccess.available) {
+      return res.status(410).json({
+        message: "This project chat closed 15 days after the gig was closed",
+        chatAccessUntil: chatAccess.expiresAt
+      });
     }
 
     const requestedLimit = Number.parseInt(req.query.limit, 10);

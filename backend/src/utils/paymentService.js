@@ -1,13 +1,9 @@
-const Razorpay = require("razorpay");
 const Payment = require("../models/Payment");
 const Gig = require("../models/Gig");
 const User = require("../models/User");
 const { sendWhatsApp, messages } = require("./whatsapp");
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+const { createRazorpayClient, assertPaymentMode } = require("./razorpayConfig");
 
 const setStatusError = (message, statusCode = 400) => {
   const error = new Error(message);
@@ -17,7 +13,7 @@ const setStatusError = (message, statusCode = 400) => {
 
 const refreshStudentEarnings = async (studentId) => {
   const [result] = await Payment.aggregate([
-    { $match: { student: studentId, status: "released" } },
+    { $match: { student: studentId, status: "released", mode: { $ne: "test" } } },
     { $group: { _id: "$student", total: { $sum: "$studentAmount" } } }
   ]);
   await User.findByIdAndUpdate(studentId, { $set: { totalEarnings: result?.total || 0 } });
@@ -25,10 +21,11 @@ const refreshStudentEarnings = async (studentId) => {
 
 const finalizeRelease = async (payment) => {
   const releasedAt = new Date();
+  const gigBeforeRelease = await Gig.findById(payment.gig).select("closedAt clientClosedAt completedAt");
   const released = await Payment.findOneAndUpdate(
     { _id: payment._id, status: "releasing" },
     {
-      $set: { status: "released", releasedAt, autoReleaseAt: null, statusBeforeProcessing: "", operationStartedAt: null }
+      $set: { status: "released", releasedAt, autoReleaseAt: null, adminHold: false, adminHoldClearedAt: payment.adminHold ? releasedAt : payment.adminHoldClearedAt, statusBeforeProcessing: "", operationStartedAt: null }
     },
     { new: true }
   );
@@ -38,43 +35,48 @@ const finalizeRelease = async (payment) => {
     Gig.findByIdAndUpdate(payment.gig, {
       status: "completed",
       paymentStatus: "released",
-      completedAt: releasedAt
+      completedAt: releasedAt,
+      closedAt: payment.clientClosedAt || gigBeforeRelease?.clientClosedAt || gigBeforeRelease?.closedAt || releasedAt
     }),
     refreshStudentEarnings(payment.student)
   ]);
 
   const student = await User.findById(payment.student);
-  if (student?.whatsappNumber) {
+  if (payment.mode !== "test" && student?.whatsappNumber) {
     await sendWhatsApp(student.whatsappNumber, messages.paymentReceived(payment.studentAmount));
   }
   return released;
 };
 
-const releaseHeldPayment = async (paymentId, { allowDisputed = false } = {}) => {
+const releaseHeldPayment = async (paymentId, { allowDisputed = false, overrideAdminHold = false } = {}) => {
   const payment = await Payment.findById(paymentId);
   if (!payment) throw setStatusError("Payment not found", 404);
+  const mode = assertPaymentMode(payment);
+  if (payment.adminHold && !overrideAdminHold) throw setStatusError("An admin has placed this payment on hold", 409);
 
   if (payment.status === "released") {
+    const gig = await Gig.findById(payment.gig).select("closedAt clientClosedAt completedAt");
+    const closedAt = payment.clientClosedAt || gig?.clientClosedAt || gig?.closedAt || payment.releasedAt || gig?.completedAt || new Date();
     await Gig.findByIdAndUpdate(payment.gig, {
       status: "completed",
       paymentStatus: "released",
-      completedAt: payment.releasedAt || new Date()
+      completedAt: gig?.completedAt || payment.releasedAt || closedAt,
+      closedAt,
+      clientClosedAt: gig?.clientClosedAt || payment.clientClosedAt || closedAt
     });
     await refreshStudentEarnings(payment.student);
     return { payment, alreadyReleased: true };
   }
 
-  const eligibleStatuses = allowDisputed ? ["escrowed", "disputed"] : ["escrowed"];
+  const eligibleStatuses = allowDisputed ? ["paid", "escrowed", "disputed"] : ["paid", "escrowed"];
   if (!eligibleStatuses.includes(payment.status)) {
     throw setStatusError("Payment is not eligible for release", 409);
   }
-  if (!payment.razorpayTransferId) {
-    throw setStatusError("No Razorpay Route transfer is linked to this payment", 409);
-  }
-
   const priorStatus = payment.status;
+  const claimFilter = { _id: payment._id, status: priorStatus };
+  if (!overrideAdminHold) claimFilter.adminHold = { $ne: true };
   const claimed = await Payment.findOneAndUpdate(
-    { _id: payment._id, status: priorStatus },
+    claimFilter,
     {
       $set: {
         status: "releasing",
@@ -91,16 +93,76 @@ const releaseHeldPayment = async (paymentId, { allowDisputed = false } = {}) => 
   }
 
   try {
-    // Route releases the held settlement. The linked account's settlement schedule still applies.
-    await razorpay.transfers.edit(payment.razorpayTransferId, { on_hold: false });
-    const released = await finalizeRelease(payment);
-    if (!released) throw new Error("Razorpay released the transfer but the payment record could not be updated");
-    return { payment: released, alreadyReleased: false };
+    if (mode === "test") {
+      const released = await finalizeRelease(payment);
+      if (!released) throw new Error("Test payout could not be recorded");
+      return { payment: released, alreadyReleased: false, payoutPending: false };
+    }
+
+    const { client: razorpay } = createRazorpayClient();
+    if (!payment.razorpayPaymentId) throw setStatusError("Razorpay payment ID is missing; admin review is required", 409);
+    const student = await User.findById(payment.student).select("razorpayAccountId role");
+    if (!student || student.role !== "student" || !student.razorpayAccountId) {
+      throw setStatusError("The student needs an active Razorpay Route linked account before payout can be approved", 409);
+    }
+
+    let transfer = payment.razorpayTransferId
+      ? await razorpay.transfers.fetch(payment.razorpayTransferId)
+      : null;
+    if (transfer?.status === "failed" || transfer?.transfer_status === "failed") transfer = null;
+    if (!transfer) {
+      const transferCollection = await razorpay.payments.fetchTransfer(payment.razorpayPaymentId);
+      const transfers = transferCollection?.items || [];
+      const activeTransfers = transfers.filter((item) => item.status !== "failed" && item.transfer_status !== "failed");
+      transfer = activeTransfers.find((item) =>
+        item.recipient === student.razorpayAccountId && item.amount === Math.round(payment.studentAmount * 100)
+      );
+      if (!transfer && activeTransfers.length) {
+        throw setStatusError("A different Route transfer already exists for this payment; admin review is required", 409);
+      }
+    }
+
+    if (!transfer) {
+      const created = await razorpay.payments.transfer(payment.razorpayPaymentId, {
+        transfers: [{
+          account: student.razorpayAccountId,
+          amount: Math.round(payment.studentAmount * 100),
+          currency: "INR",
+          on_hold: false,
+          notes: { gigId: String(payment.gig), paymentId: String(payment._id) }
+        }]
+      });
+      transfer = created?.items?.find((item) => item.recipient === student.razorpayAccountId) || created?.items?.[0];
+    } else if (transfer.recipient !== student.razorpayAccountId || transfer.amount !== Math.round(payment.studentAmount * 100)) {
+      throw setStatusError("The existing Route transfer does not match the selected student and payout amount", 409);
+    } else if (transfer.on_hold === true) {
+      transfer = await razorpay.transfers.edit(transfer.id, { on_hold: false });
+    }
+
+    if (!transfer?.id) throw new Error("Razorpay did not return a transfer ID for this payout");
+    const transferStatus = transfer.status || transfer.transfer_status;
+    if (transferStatus === "failed") throw setStatusError("Razorpay could not create the transfer. Check the linked account and retry approval.", 502);
+
+    await Payment.updateOne(
+      { _id: payment._id, status: "releasing" },
+      { $set: { razorpayTransferId: transfer.id, operationStartedAt: null } }
+    );
+    await Gig.findByIdAndUpdate(payment.gig, { status: "payout-processing" });
+
+    if (transferStatus === "processed") {
+      const released = await finalizeRelease(payment);
+      if (!released) throw new Error("Razorpay processed the payout but the payment record could not be updated");
+      return { payment: released, alreadyReleased: false, payoutPending: false };
+    }
+
+    const processingPayment = await Payment.findById(payment._id);
+    return { payment: processingPayment, alreadyReleased: false, payoutPending: true };
   } catch (error) {
     await Payment.findOneAndUpdate(
       { _id: payment._id, status: "releasing" },
       { $set: { status: priorStatus, statusBeforeProcessing: "", operationStartedAt: null } }
     );
+    if (mode === "live") await Gig.findByIdAndUpdate(payment.gig, { status: payment.clientClosedAt ? "pending-admin-approval" : "disputed" });
     throw error;
   }
 };
@@ -108,6 +170,7 @@ const releaseHeldPayment = async (paymentId, { allowDisputed = false } = {}) => 
 const refundPayment = async (paymentId, { allowedStatuses = ["disputed"], reason = "GIG INDIA admin dispute resolution" } = {}) => {
   const payment = await Payment.findById(paymentId);
   if (!payment) throw setStatusError("Payment not found", 404);
+  assertPaymentMode(payment);
   if (payment.status === "refunded") return { payment, alreadyRefunded: true };
   if (!allowedStatuses.includes(payment.status)) throw setStatusError("Payment is not eligible for an admin refund", 409);
   if (!payment.razorpayPaymentId) throw setStatusError("Razorpay payment ID is missing", 409);
@@ -128,6 +191,7 @@ const refundPayment = async (paymentId, { allowedStatuses = ["disputed"], reason
     // The gig ID in refund notes lets a retry recover a refund created just before a server restart.
     let refunds = { items: [] };
     try {
+      const { client: razorpay } = createRazorpayClient();
       refunds = await razorpay.payments.fetchMultipleRefund(payment.razorpayPaymentId, { count: 100 });
     } catch (error) {
       // No previous refund list is available; attempt the refund request below.
@@ -137,6 +201,7 @@ const refundPayment = async (paymentId, { allowedStatuses = ["disputed"], reason
       item.notes?.gigId === String(payment.gig)
     );
     if (!refund) {
+      const { client: razorpay } = createRazorpayClient();
       refund = await razorpay.payments.refund(payment.razorpayPaymentId, {
         amount: Math.round(payment.totalAmount * 100),
         reverse_all: true,
@@ -153,6 +218,8 @@ const refundPayment = async (paymentId, { allowedStatuses = ["disputed"], reason
           refundedAt,
           razorpayRefundId: refund.id,
           autoReleaseAt: null,
+          adminHold: false,
+          adminHoldClearedAt: payment.adminHold ? refundedAt : payment.adminHoldClearedAt,
           statusBeforeProcessing: "",
           operationStartedAt: null
         }
@@ -160,7 +227,7 @@ const refundPayment = async (paymentId, { allowedStatuses = ["disputed"], reason
       { new: true }
     );
     if (!saved) throw new Error("Razorpay refunded the payment but the payment record could not be updated");
-    await Gig.findByIdAndUpdate(payment.gig, { status: "cancelled", paymentStatus: "refunded" });
+    await Gig.findByIdAndUpdate(payment.gig, { status: "cancelled", paymentStatus: "refunded", closedAt: refundedAt });
     return { payment: saved, alreadyRefunded: false };
   } catch (error) {
     await Payment.findOneAndUpdate(
@@ -180,15 +247,36 @@ const recoverStalePaymentOperations = async () => {
 
   for (const payment of stale) {
     try {
+      const mode = assertPaymentMode(payment);
       if (payment.status === "releasing") {
-        const transfer = payment.razorpayTransferId
-          ? await razorpay.transfers.fetch(payment.razorpayTransferId)
-          : null;
-        if (transfer && transfer.on_hold === false) {
+        if (mode === "test") {
+          // Test payouts are app-only state changes; never try a Route transfer
+          // while recovering a test-mode release.
+          await finalizeRelease(payment);
+          continue;
+        }
+        const { client: razorpay } = createRazorpayClient();
+        const transfer = payment.razorpayTransferId ? await razorpay.transfers.fetch(payment.razorpayTransferId) : null;
+        const transferStatus = transfer?.status || transfer?.transfer_status;
+        if (transferStatus === "processed") {
           const released = await finalizeRelease(payment);
           if (released) continue;
         }
+        if (transferStatus === "failed" || !transfer) {
+          const fallbackStatus = payment.statusBeforeProcessing || "paid";
+          await Payment.findOneAndUpdate(
+            { _id: payment._id, status: "releasing" },
+            { $set: { status: fallbackStatus, statusBeforeProcessing: "", operationStartedAt: null, razorpayTransferId: "" } }
+          );
+          await Gig.findByIdAndUpdate(payment.gig, { status: payment.clientClosedAt ? "pending-admin-approval" : "disputed" });
+          continue;
+        }
+        // A pending transfer is not a completed payout. The regular payment
+        // maintenance poll will check it again until Razorpay processes it.
+        await Payment.updateOne({ _id: payment._id, status: "releasing" }, { $set: { operationStartedAt: null } });
+        continue;
       } else if (payment.status === "refunding" && payment.razorpayPaymentId) {
+        const { client: razorpay } = createRazorpayClient();
         const refunds = await razorpay.payments.fetchMultipleRefund(payment.razorpayPaymentId, { count: 100 });
         const refund = refunds.items?.find((item) =>
           item.amount === Math.round(payment.totalAmount * 100) &&
@@ -204,13 +292,15 @@ const recoverStalePaymentOperations = async () => {
                 refundedAt,
                 razorpayRefundId: refund.id,
                 autoReleaseAt: null,
+                adminHold: false,
+                adminHoldClearedAt: payment.adminHold ? refundedAt : payment.adminHoldClearedAt,
                 statusBeforeProcessing: "",
                 operationStartedAt: null
               }
             },
             { new: true }
           );
-          if (saved) await Gig.findByIdAndUpdate(payment.gig, { status: "cancelled", paymentStatus: "refunded" });
+          if (saved) await Gig.findByIdAndUpdate(payment.gig, { status: "cancelled", paymentStatus: "refunded", closedAt: refundedAt });
           continue;
         }
       }
@@ -226,23 +316,33 @@ const recoverStalePaymentOperations = async () => {
   }
 };
 
-const processDueAutoReleases = async () => {
+const processPaymentMaintenance = async () => {
   await recoverStalePaymentOperations();
-  const duePayments = await Payment.find({
-    status: "escrowed",
-    razorpayTransferId: { $exists: true, $ne: "" },
-    autoReleaseAt: { $lte: new Date() }
+  const pendingTransfers = await Payment.find({
+    status: "releasing",
+    $or: [{ mode: "live" }, { mode: { $exists: false } }],
+    razorpayTransferId: { $exists: true, $ne: "" }
   }).limit(50);
 
-  for (const payment of duePayments) {
+  for (const payment of pendingTransfers) {
     try {
-      const gig = await Gig.findById(payment.gig).select("status submittedAt");
-      if (gig?.status !== "submitted" || !gig.submittedAt) continue;
-      await releaseHeldPayment(payment._id);
+      const { client: razorpay } = createRazorpayClient();
+      const transfer = await razorpay.transfers.fetch(payment.razorpayTransferId);
+      const transferStatus = transfer?.status || transfer?.transfer_status;
+      if (transferStatus === "processed") {
+        await finalizeRelease(payment);
+      } else if (transferStatus === "failed") {
+        const fallbackStatus = payment.statusBeforeProcessing || "paid";
+        await Payment.findOneAndUpdate(
+          { _id: payment._id, status: "releasing" },
+          { $set: { status: fallbackStatus, statusBeforeProcessing: "", operationStartedAt: null, razorpayTransferId: "" } }
+        );
+        await Gig.findByIdAndUpdate(payment.gig, { status: payment.clientClosedAt ? "pending-admin-approval" : "disputed" });
+      }
     } catch (error) {
-      console.error(`Auto-release failed for payment ${payment._id}: ${error.message}`);
+      console.error(`Payout status check failed for payment ${payment._id}: ${error.message}`);
     }
   }
 };
 
-module.exports = { releaseHeldPayment, refundPayment, processDueAutoReleases };
+module.exports = { releaseHeldPayment, refundPayment, processPaymentMaintenance };

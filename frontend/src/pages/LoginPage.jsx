@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AuthPanel from '../components/common/AuthPanel.jsx'
 import Button from '../components/common/Button.jsx'
 import Field from '../components/common/Field.jsx'
+import PasswordField from '../components/common/PasswordField.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
 import { getErrorMessage } from '../utils/errors.js'
@@ -37,7 +38,7 @@ export default function LoginPage() {
       <form className="form-stack" onSubmit={submit}>
         {error && <div className="form-alert" role="alert">{error}</div>}
         <Field label="Email address" id="login-email" type="email" name="email" autoComplete="email" value={form.email} onChange={update} required />
-        <Field label="Password" id="login-password" type="password" name="password" autoComplete="current-password" value={form.password} onChange={update} required />
+        <PasswordField label="Password" id="login-password" name="password" autoComplete="current-password" value={form.password} onChange={update} required />
         <div className="form-inline-link"><Link to="/forgot-password">Forgot password?</Link></div>
         <Button type="submit" size="large" loading={loading}>Log in</Button>
       </form>

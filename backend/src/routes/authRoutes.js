@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { protect } = require("../middleware/auth");
 const { body } = require("express-validator");
-const { registerUser, loginUser, getMe, forgotPassword, resetPassword, deleteAccount } = require("../controllers/authController");
+const { registerUser, loginUser, getMe, getUsernameAvailability, updateProfile, forgotPassword, resetPassword, deleteAccount } = require("../controllers/authController");
 
 // Validation rules
 const registerValidation = [
@@ -31,6 +31,8 @@ const loginValidation = [
 router.post("/register", registerValidation, registerUser);
 router.post("/login", loginValidation, loginUser);
 router.get("/me", protect, getMe);
+router.get("/username-availability", protect, getUsernameAvailability);
+router.put("/profile", protect, updateProfile);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 router.delete("/delete-account", protect, deleteAccount);

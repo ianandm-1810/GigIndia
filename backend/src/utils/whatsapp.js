@@ -34,7 +34,7 @@ const messages = {
     `🏆 GIG INDIA: Gig "${gigTitle}" marked complete. Leave a review!`,
 
   paymentEscrowed: (gigTitle, amount) =>
-    `🔒 GIG INDIA: ₹${amount} is now in escrow for "${gigTitle}". Work can begin!`
+    `💳 GIG INDIA: ₹${amount} for "${gigTitle}" has been received. After the client closes the project, an admin reviews and approves the student payout.`
 };
 
 module.exports = { sendWhatsApp, messages };

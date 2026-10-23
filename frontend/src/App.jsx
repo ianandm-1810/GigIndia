@@ -12,7 +12,7 @@ export default function App() {
       <AuthProvider>
         <ToastProvider>
           <BrowserRouter>
-            <Suspense fallback={<LoadingState message="Opening GIG INDIA..." />}>
+            <Suspense fallback={<LoadingState message="Opening GIGI India..." />}>
               <AppRoutes />
             </Suspense>
           </BrowserRouter>

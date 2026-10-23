@@ -7,7 +7,10 @@ const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const Gig = require("./models/Gig");
 const Message = require("./models/Message");
-const { processDueAutoReleases } = require("./utils/paymentService");
+const StudentConversation = require("./models/StudentConversation");
+const { processPaymentMaintenance } = require("./utils/paymentService");
+const { getChatAccess } = require("./utils/chatAccess");
+const { containsBlockedChatLanguage, containsPersonalContactDetails } = require("./utils/chatModeration");
 
 const PORT = process.env.PORT || 5000;
 
@@ -21,6 +24,7 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 });
+app.set("io", io);
 // Socket login check — bina valid token ke connect nahi hoga
 io.use(async (socket, next) => {
   try {
@@ -33,7 +37,7 @@ io.use(async (socket, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select("-password");
 
-    if (!user) {
+    if (!user || user.isRemoved) {
       return next(new Error("User not found"));
     }
 
@@ -50,6 +54,8 @@ io.use(async (socket, next) => {
 
 // Helper: check karo ki user is gig ke chat ka hissa hai ya nahi
 const getChatGig = async (gigId, userId) => {
+  const activeUser = await User.findById(userId).select("isSuspended isRemoved");
+  if (!activeUser || activeUser.isRemoved || activeUser.isSuspended) return null;
   const gig = await Gig.findById(gigId);
   if (!gig) return null;
 
@@ -57,12 +63,14 @@ const getChatGig = async (gigId, userId) => {
   const isStudent = gig.assignedTo && gig.assignedTo.toString() === userId.toString();
 
   if (!isClient && !isStudent) return null;
-  return { gig, isClient };
+  const chatAccess = getChatAccess(gig);
+  return { gig, isClient, chatAccess };
 };
 
 // Socket.io logic
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
+  socket.join(`user:${socket.user._id}`);
 
   // Gig room join — sirf client ya assigned student
   socket.on("joinRoom", async (gigId, acknowledge) => {
@@ -79,8 +87,13 @@ io.on("connection", (socket) => {
         }
         return;
       }
+      if (!result.chatAccess.available) {
+        const message = "This project chat closed 15 days after the gig was closed";
+        if (!reply({ ok: false, message, chatAccessUntil: result.chatAccess.expiresAt })) socket.emit("errorMessage", message);
+        return;
+      }
       socket.join(String(gigId));
-      reply({ ok: true });
+      reply({ ok: true, chatAccess: result.chatAccess });
       console.log(`User ${socket.user._id} joined room: ${gigId}`);
     } catch (error) {
       if (!reply({ ok: false, message: "Room join nahi ho paya" })) {
@@ -97,15 +110,46 @@ io.on("connection", (socket) => {
       return true;
     };
     try {
-      const { gigId, message, fileUrl } = data || {};
+      const { gigId, message = "", fileUrl = "", mediaType = "" } = data || {};
+      if (typeof message !== "string") {
+        if (!reply({ ok: false, message: "Message must be plain text" })) socket.emit("errorMessage", "Message must be plain text");
+        return;
+      }
+      const trimmedMessage = message.trim();
 
-      if (!message?.trim() && !fileUrl) {
+      if (!trimmedMessage && !fileUrl) {
         if (!reply({ ok: false, message: "Message khaali hai" })) socket.emit("errorMessage", "Message khaali hai");
         return;
       }
-      if (message && message.length > 2000) {
+      if (trimmedMessage.length > 2000) {
         if (!reply({ ok: false, message: "Message bahut lamba hai" })) socket.emit("errorMessage", "Message bahut lamba hai");
         return;
+      }
+      if (containsBlockedChatLanguage(trimmedMessage)) {
+        const moderationMessage = "Please remove abusive or inappropriate language before sending this message.";
+        if (!reply({ ok: false, message: moderationMessage })) socket.emit("errorMessage", moderationMessage);
+        return;
+      }
+      if (containsPersonalContactDetails(trimmedMessage)) {
+        const privacyMessage = "For your privacy, phone numbers and email addresses cannot be shared in chat.";
+        if (!reply({ ok: false, message: privacyMessage })) socket.emit("errorMessage", privacyMessage);
+        return;
+      }
+      if (fileUrl && !["image", "video"].includes(mediaType)) {
+        if (!reply({ ok: false, message: "Only uploaded images or videos can be shared here" })) socket.emit("errorMessage", "Only uploaded images or videos can be shared here");
+        return;
+      }
+      if (!fileUrl && mediaType) {
+        if (!reply({ ok: false, message: "Upload an image or video before sending it" })) socket.emit("errorMessage", "Upload an image or video before sending it");
+        return;
+      }
+      if (fileUrl) {
+        const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+        const expectedPrefix = `https://res.cloudinary.com/${cloudName}/${mediaType}/upload/`;
+        if (!cloudName || !fileUrl.startsWith(expectedPrefix)) {
+          if (!reply({ ok: false, message: "This media link was not uploaded through GIG INDIA" })) socket.emit("errorMessage", "This media link was not uploaded through GIG INDIA");
+          return;
+        }
       }
 
       const result = await getChatGig(gigId, socket.user._id);
@@ -116,7 +160,20 @@ io.on("connection", (socket) => {
         return;
       }
 
-      const { gig, isClient } = result;
+      const { gig, isClient, chatAccess } = result;
+
+      if (!socket.rooms.has(String(gigId))) {
+        if (!reply({ ok: false, message: "Join this project chat before sending a message" })) {
+          socket.emit("errorMessage", "Join this project chat before sending a message");
+        }
+        return;
+      }
+      if (!chatAccess.available) {
+        if (!reply({ ok: false, message: "This project chat closed 15 days after the gig was closed", chatAccessUntil: chatAccess.expiresAt })) {
+          socket.emit("errorMessage", "This project chat closed 15 days after the gig was closed");
+        }
+        return;
+      }
 
       if (!gig.assignedTo) {
         if (!reply({ ok: false, message: "Gig abhi kisi student ko assign nahi hua" })) {
@@ -132,8 +189,9 @@ io.on("connection", (socket) => {
         gig: gig._id,
         sender: socket.user._id,
         receiver: receiverId,
-        message: message ? message.trim() : "",
-        fileUrl: fileUrl || ""
+        message: trimmedMessage,
+        fileUrl,
+        mediaType
       });
 
       io.to(String(gigId)).emit("receiveMessage", saved);
@@ -145,11 +203,41 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("joinStudentChat", async (conversationId, acknowledge) => {
+    const reply = (result) => {
+      if (typeof acknowledge !== "function") return false;
+      acknowledge(result);
+      return true;
+    };
+    try {
+      if (socket.user.role !== "student") return reply({ ok: false, message: "Student accounts only" });
+      const activeUser = await User.findById(socket.user._id).select("isSuspended isRemoved role");
+      const conversation = await StudentConversation.findOne({
+        _id: conversationId,
+        members: socket.user._id,
+        status: "accepted"
+      });
+      if (!activeUser || activeUser.role !== "student" || activeUser.isSuspended || activeUser.isRemoved || !conversation) {
+        return reply({ ok: false, message: "This accepted student chat is not available to your account" });
+      }
+      socket.join(`student-chat:${conversation._id}`);
+      return reply({ ok: true });
+    } catch (error) {
+      return reply({ ok: false, message: "Could not open this student chat" });
+    }
+  });
+
   // Typing indicator — sirf tab jab user us room mein ho
-  socket.on("typing", (data) => {
+  socket.on("typing", async (data) => {
     const gigId = String(data?.gigId);
-    if (socket.rooms.has(gigId)) {
-      socket.to(gigId).emit("userTyping", { gigId, userId: socket.user._id });
+    if (!socket.rooms.has(gigId)) return;
+    try {
+      const result = await getChatGig(gigId, socket.user._id);
+      if (result?.chatAccess.available) {
+        socket.to(gigId).emit("userTyping", { gigId, userId: socket.user._id });
+      }
+    } catch (error) {
+      // Ignore typing updates if the gig no longer exists or access has expired.
     }
   });
 
@@ -163,16 +251,16 @@ connectDB().then(() => {
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT} 🚀`);
   });
-  // Run immediately after startup to recover due payments after a restart, then check once per minute.
-  processDueAutoReleases().catch((error) => {
-    console.error(`Auto-release sweep failed: ${error.message}`);
+  // Recover interrupted refunds and refresh the status of admin-approved payouts.
+  processPaymentMaintenance().catch((error) => {
+    console.error(`Payment maintenance failed: ${error.message}`);
   });
-  const autoReleaseTimer = setInterval(() => {
-    processDueAutoReleases().catch((error) => {
-      console.error(`Auto-release sweep failed: ${error.message}`);
+  const paymentMaintenanceTimer = setInterval(() => {
+    processPaymentMaintenance().catch((error) => {
+      console.error(`Payment maintenance failed: ${error.message}`);
     });
   }, 60 * 1000);
-  autoReleaseTimer.unref();
+  paymentMaintenanceTimer.unref();
 }).catch((error) => {
   console.error(`Database connection failed: ${error.message}`);
   process.exit(1);

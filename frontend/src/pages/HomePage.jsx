@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Button from '../components/common/Button.jsx'
 import Card from '../components/common/Card.jsx'
 import Reveal from '../components/common/Reveal.jsx'
+import TechPulse from '../components/features/TechPulse.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const steps = [
@@ -48,11 +49,13 @@ export default function HomePage() {
         </div>
         <div className="hero-float hero-float-right" aria-hidden="true">
           <span className="hero-float-icon float-icon-pink"><BriefcaseBusiness size={18} /></span>
-          <span><small>FRESH PROJECT</small><strong>Design a brand kit</strong><em>Creative · 4 days</em></span>
+          <span><small>STUDENT MARKETPLACE</small><strong>Find work that fits</strong></span>
           <span className="float-arrow"><ArrowUpRight size={17} /></span>
         </div>
         <div className="hero-scroll"><span /> SCROLL TO EXPLORE <span /></div>
       </section>
+
+      <TechPulse />
 
       <section className="intro-section section-wrap">
         <Reveal className="intro-copy">

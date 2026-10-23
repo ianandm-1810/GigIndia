@@ -36,6 +36,14 @@ const paymentSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  paidAt: {
+    type: Date,
+    default: null
+  },
+  clientClosedAt: {
+    type: Date,
+    default: null
+  },
   razorpayTransferId: {
     type: String,
     default: ""
@@ -49,7 +57,35 @@ const paymentSchema = new mongoose.Schema({
     enum: ["created", "paid", "escrowed", "releasing", "refunding", "released", "refunded", "disputed"],
     default: "created"
   },
+  mode: {
+    type: String,
+    enum: ["test", "live"],
+    default: "live"
+  },
   autoReleaseAt: {
+    type: Date,
+    default: null
+  },
+  adminHold: {
+    type: Boolean,
+    default: false
+  },
+  adminHoldReason: {
+    type: String,
+    trim: true,
+    maxlength: 500,
+    default: ""
+  },
+  adminHeldBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  },
+  adminHeldAt: {
+    type: Date,
+    default: null
+  },
+  adminHoldClearedAt: {
     type: Date,
     default: null
   },

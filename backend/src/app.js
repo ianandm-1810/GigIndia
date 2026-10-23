@@ -10,6 +10,8 @@ const messageRoutes = require("./routes/messageRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const supportRoutes = require("./routes/supportRoutes");
+const studentChatRoutes = require("./routes/studentChatRoutes");
+const insightsRoutes = require("./routes/insightsRoutes");
 const rateLimit = require("express-rate-limit");
 const app = express();
 
@@ -41,9 +43,11 @@ app.use("/api/proposals", proposalRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/student-chats", studentChatRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/support", supportRoutes);
+app.use("/api/insights", insightsRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/gigs", gigRoutes);

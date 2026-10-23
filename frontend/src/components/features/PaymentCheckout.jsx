@@ -18,6 +18,7 @@ function loadCheckoutScript() {
 
 export default function PaymentCheckout({ gig, onPaymentVerified }) {
   const [loading, setLoading] = useState(false)
+  const [paymentMode, setPaymentMode] = useState(null)
   const { showToast } = useToast()
 
   async function startCheckout() {
@@ -27,6 +28,7 @@ export default function PaymentCheckout({ gig, onPaymentVerified }) {
       if (!ready) throw new Error('Razorpay Checkout could not load. Check your internet connection.')
 
       const { data: order } = await apiClient.post('/payments/create-order', { gigId: gig._id })
+      setPaymentMode(order.mode || 'test')
       const checkout = new window.Razorpay({
         key: order.keyId,
         amount: order.amount,
@@ -41,12 +43,12 @@ export default function PaymentCheckout({ gig, onPaymentVerified }) {
         theme: { color: '#5b5cff' },
         handler: async (response) => {
           try {
-            await apiClient.post('/payments/verify', {
+            const { data: result } = await apiClient.post('/payments/verify', {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
             })
-            showToast('Payment verified. The backend recorded its status; student payout is not connected yet.')
+            showToast(result.message || (result.mode === 'test' ? 'Test payment recorded; no real money moved.' : 'Payment verified.'))
             onPaymentVerified?.()
           } catch (error) {
             showToast(getErrorMessage(error, 'We could not verify this payment. Contact support before retrying.'), 'error')
@@ -68,7 +70,7 @@ export default function PaymentCheckout({ gig, onPaymentVerified }) {
 
   return (
     <div className="payment-checkout">
-      <p className="payment-note"><LockKeyhole size={16} /> Payment status is recorded after verification. Student payouts are not connected yet.</p>
+      <p className="payment-note"><LockKeyhole size={16} /> {paymentMode === 'test' ? 'Test mode: no real money moves. The app simulates the payout after the client closes the project and an admin approves it.' : paymentMode === 'live' ? 'The payment is collected by GIG INDIA. After you close the project, an admin reviews and approves the 90% student payout; Razorpay and bank processing times apply.' : 'Razorpay checkout confirms the active payment mode. The payment is recorded in project history and requires client closure and admin payout approval.'}</p>
       <Button type="button" onClick={startCheckout} loading={loading}>Continue to secure checkout</Button>
     </div>
   )

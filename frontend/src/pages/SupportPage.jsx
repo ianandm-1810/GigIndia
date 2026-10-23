@@ -7,8 +7,19 @@ import { useAuth } from '../context/AuthContext.jsx'
 import apiClient from '../services/apiClient.js'
 import { getErrorMessage } from '../utils/errors.js'
 
-const whatsappNumber = (import.meta.env.VITE_SUPPORT_WHATSAPP_NUMBER || '').replace(/\D/g, '')
-const whatsappLink = whatsappNumber.length >= 8 && whatsappNumber.length <= 15
+function normalizeWhatsAppNumber(value = '') {
+  let digits = value.replace(/\D/g, '')
+
+  // GIG INDIA users are primarily in India, so accept a local 10-digit number
+  // and convert it to WhatsApp's international format automatically.
+  if (digits.length === 10) digits = `91${digits}`
+  if (digits.length === 11 && digits.startsWith('0')) digits = `91${digits.slice(1)}`
+
+  return digits.length >= 8 && digits.length <= 15 && !digits.startsWith('0') ? digits : ''
+}
+
+const whatsappNumber = normalizeWhatsAppNumber(import.meta.env.VITE_SUPPORT_WHATSAPP_NUMBER)
+const whatsappLink = whatsappNumber
   ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi GIG INDIA Support, I need help with: ')}`
   : ''
 
@@ -65,7 +76,7 @@ export default function SupportPage() {
                 <a className="button button-primary button-medium support-whatsapp-button" href={whatsappLink} target="_blank" rel="noreferrer">Message us on WhatsApp <span aria-hidden="true">↗</span></a>
               </>
             ) : (
-              <p>WhatsApp support will appear here once GIG INDIA’s public WhatsApp Business number is configured.</p>
+              <p>WhatsApp support isn’t configured yet. Please use the support form below to contact us.</p>
             )}
           </article>
 

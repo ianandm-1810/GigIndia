@@ -13,6 +13,16 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
+  username: {
+    type: String,
+    lowercase: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 24,
+    match: /^[a-z0-9][a-z0-9_-]{1,22}[a-z0-9]$/,
+    unique: true,
+    sparse: true
+  },
   password: {
     type: String,
     required: true,
@@ -27,10 +37,28 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  companyName: {
+    type: String,
+    trim: true,
+    maxlength: 160,
+    default: ""
+  },
   skills: [String],
   bio: {
     type: String,
     maxlength: 500
+  },
+  socialLinks: {
+    github: { type: String, trim: true, maxlength: 2048, default: "" },
+    linkedin: { type: String, trim: true, maxlength: 2048, default: "" },
+    instagram: { type: String, trim: true, maxlength: 2048, default: "" },
+    discord: { type: String, trim: true, maxlength: 2048, default: "" }
+  },
+  portfolioLink: {
+    type: String,
+    trim: true,
+    maxlength: 2048,
+    default: ""
   },
   profilePhoto: {
     type: String,
@@ -56,6 +84,14 @@ const userSchema = new mongoose.Schema({
   isSuspended: {
     type: Boolean,
     default: false
+  },
+  isRemoved: {
+    type: Boolean,
+    default: false
+  },
+  removedAt: {
+    type: Date,
+    default: null
   },
   // Razorpay Route linked-account ID (acc_...). This is not an API secret.
   razorpayAccountId: {

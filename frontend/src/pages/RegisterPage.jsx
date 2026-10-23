@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AuthPanel from '../components/common/AuthPanel.jsx'
 import Button from '../components/common/Button.jsx'
 import Field from '../components/common/Field.jsx'
+import PasswordField from '../components/common/PasswordField.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
 import { getErrorMessage } from '../utils/errors.js'
@@ -43,7 +44,7 @@ export default function RegisterPage() {
         </div>
         <Field label="Your name" id="register-name" type="text" name="name" autoComplete="name" minLength="2" value={form.name} onChange={update} required />
         <Field label="Email address" id="register-email" type="email" name="email" autoComplete="email" value={form.email} onChange={update} required />
-        <Field label="Password" id="register-password" type="password" name="password" autoComplete="new-password" minLength="8" hint="8+ characters with uppercase, lowercase, number, and a special character." value={form.password} onChange={update} required />
+        <PasswordField label="Password" id="register-password" name="password" autoComplete="new-password" minLength="8" hint="8+ characters with uppercase, lowercase, number, and a special character." value={form.password} onChange={update} required />
         <Field label={form.role === 'student' ? 'College' : 'College / organization (optional)'} id="register-college" type="text" name="college" autoComplete="organization" value={form.college} onChange={update} required={form.role === 'student'} />
         <Field label="WhatsApp number (optional)" id="register-whatsapp" type="tel" name="whatsappNumber" autoComplete="tel" hint="Include your country code, for example +91..." value={form.whatsappNumber} onChange={update} />
         <Button type="submit" size="large" loading={loading}>Create account</Button>

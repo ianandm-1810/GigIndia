@@ -54,6 +54,7 @@ export default function AppShell() {
           <nav id="primary-navigation" className={'desktop-nav' + (menuOpen ? ' nav-open' : '')} aria-label="Main navigation">
             <NavLink to="/browse-gigs" onClick={() => setMenuOpen(false)}>Explore gigs</NavLink>
             {user && <NavLink to={dashboardPath} onClick={() => setMenuOpen(false)}>Dashboard</NavLink>}
+            {user?.role === 'student' && <NavLink to="/student-chats" onClick={() => setMenuOpen(false)}>Student chats</NavLink>}
             {user && <NavLink to="/payments" onClick={() => setMenuOpen(false)}>Payments</NavLink>}
             {user?.role === 'client' && <NavLink to="/post-gig" onClick={() => setMenuOpen(false)}>Post a gig</NavLink>}
             <NavLink to="/about" onClick={() => setMenuOpen(false)}>How it works</NavLink>

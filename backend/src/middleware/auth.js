@@ -16,7 +16,7 @@ const protect = async (req, res, next) => {
     // User DB se lo, password chhod ke
     req.user = await User.findById(decoded.id).select("-password");
 
-    if (!req.user) {
+    if (!req.user || req.user.isRemoved) {
       return res.status(401).json({ message: "Account not found" });
     }
 
@@ -38,4 +38,17 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+const optionalProtect = async (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return next();
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+    if (user && !user.isRemoved && !user.isSuspended) req.user = user;
+    return next();
+  } catch (error) {
+    return next();
+  }
+};
+
+module.exports = { protect, adminOnly, optionalProtect };
