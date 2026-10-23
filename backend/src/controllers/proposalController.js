@@ -2,6 +2,7 @@ const Proposal = require("../models/Proposal");
 const Gig = require("../models/Gig");
 const { sendWhatsApp, messages } = require("../utils/whatsapp");
 const User = require("../models/User");
+const { sendEmail, emailTemplates } = require("../utils/email");
 
 // @route POST /api/proposals/:gigId
 const sendProposal = async (req, res) => {
@@ -99,14 +100,24 @@ const acceptProposal = async (req, res) => {
       { gig: proposal.gig, _id: { $ne: proposal._id } },
       { status: "rejected" }
     );
-    // WhatsApp notification — student ko batao proposal accept hua
-const student = await User.findById(proposal.student);
-if (student.whatsappNumber) {
-  await sendWhatsApp(
-    student.whatsappNumber,
-    messages.proposalAccepted(gig.title)
-  );
-}
+    // Tell the student they can start using the private gig chat.
+    const student = await User.findById(proposal.student);
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const chatUrl = new URL(`/chat/${gig._id}`, clientUrl).toString();
+    if (student) {
+      if (student.whatsappNumber) {
+        await sendWhatsApp(student.whatsappNumber, messages.proposalAccepted(gig.title));
+      }
+      try {
+        await sendEmail(
+          student.email,
+          "Your GIGI India proposal was accepted",
+          emailTemplates.proposalAccepted(gig.title, chatUrl)
+        );
+      } catch (emailError) {
+        console.error(`Proposal acceptance email failed: ${emailError.message}`);
+      }
+    }
 
     res.json({ message: "Proposal accepted", proposal });
   } catch (error) {

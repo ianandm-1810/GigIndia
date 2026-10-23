@@ -105,7 +105,7 @@ const releaseHeldPayment = async (paymentId, { allowDisputed = false } = {}) => 
   }
 };
 
-const refundPayment = async (paymentId, { allowedStatuses = ["disputed"], reason = "GigIndia admin dispute resolution" } = {}) => {
+const refundPayment = async (paymentId, { allowedStatuses = ["disputed"], reason = "GIGI India admin dispute resolution" } = {}) => {
   const payment = await Payment.findById(paymentId);
   if (!payment) throw setStatusError("Payment not found", 404);
   if (payment.status === "refunded") return { payment, alreadyRefunded: true };

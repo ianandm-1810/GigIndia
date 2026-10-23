@@ -93,10 +93,8 @@ export default function GigDetailPage() {
     setBusy(true)
     try {
       await apiClient.put('/proposals/' + proposalId + '/accept')
-      showToast('Proposal accepted. The student is assigned to this gig.')
-      await loadGig()
-      const { data } = await apiClient.get('/proposals/' + gigId)
-      setProposalState({ gigId, items: Array.isArray(data) ? data : [] })
+      showToast('Proposal accepted. Opening your private project chat.')
+      navigate('/chat/' + gigId)
     } catch (requestError) {
       showToast(getErrorMessage(requestError, 'Could not accept this proposal.'), 'error')
     } finally { setBusy(false) }

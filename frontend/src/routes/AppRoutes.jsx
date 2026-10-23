@@ -19,6 +19,7 @@ const PrivacyPolicyPage = lazy(() => import('../pages/PrivacyPolicyPage.jsx'))
 const ProfilePage = lazy(() => import('../pages/ProfilePage.jsx'))
 const RegisterPage = lazy(() => import('../pages/RegisterPage.jsx'))
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage.jsx'))
+const SupportPage = lazy(() => import('../pages/SupportPage.jsx'))
 const StudentDashboardPage = lazy(() => import('../pages/StudentDashboardPage.jsx'))
 const TermsPage = lazy(() => import('../pages/TermsPage.jsx'))
 
@@ -36,6 +37,7 @@ export default function AppRoutes() {
         <Route path="reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="terms" element={<TermsPage />} />
+        <Route path="support" element={<SupportPage />} />
         <Route path="*" element={<NotFoundPage />} />
 
         <Route element={<ProtectedRoute />}>

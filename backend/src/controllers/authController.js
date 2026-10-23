@@ -148,7 +148,7 @@ const forgotPassword = async (req, res) => {
     // Email bhejo
     await sendEmail(
       user.email,
-      "GigIndia Password Reset",
+      "GIGI India Password Reset",
       emailTemplates.passwordReset(resetUrl)
     );
 

@@ -7,11 +7,12 @@ const client = twilio(
 
 const sendWhatsApp = async (to, message) => {
   try {
+    // WhatsApp free-form messages require an open customer-service window; proactive production messages need an approved template.
     await client.messages.create({
-  from: process.env.TWILIO_WHATSAPP_NUMBER,
-  to: `whatsapp:+91${to}`,
-  contentSid: "HXfe5ab5f00277942d4d4200328b4d403c"
-});
+      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      to: `whatsapp:+91${to}`,
+      body: message
+    });
     console.log(`WhatsApp sent to ${to}`);
   } catch (error) {
     console.error(`WhatsApp error: ${error.message}`);
@@ -21,19 +22,19 @@ const sendWhatsApp = async (to, message) => {
 // Ready made messages
 const messages = {
   proposalReceived: (gigTitle) =>
-    `🎉 GigIndia: New proposal received on your gig "${gigTitle}". Login to review it.`,
+    `🎉 GIGI India: New proposal received on your gig "${gigTitle}". Log in to review it.`,
 
   proposalAccepted: (gigTitle) =>
-    `✅ GigIndia: Your proposal was accepted for "${gigTitle}". Start working now!`,
+    `✅ GIGI India: Your proposal was accepted for "${gigTitle}". Open GIGI India to start working.`,
 
   paymentReceived: (amount) =>
-    `💰 GigIndia: ₹${amount} has been released to your account. Great work!`,
+    `💰 GIGI India: ₹${amount} has been released to your account. Great work!`,
 
   gigCompleted: (gigTitle) =>
-    `🏆 GigIndia: Gig "${gigTitle}" marked complete. Leave a review!`,
+    `🏆 GIGI India: Gig "${gigTitle}" marked complete. Leave a review!`,
 
   paymentEscrowed: (gigTitle, amount) =>
-    `🔒 GigIndia: ₹${amount} is now in escrow for "${gigTitle}". Work can begin!`
+    `🔒 GIGI India: ₹${amount} is now in escrow for "${gigTitle}". Work can begin!`
 };
 
 module.exports = { sendWhatsApp, messages };

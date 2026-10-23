@@ -70,3 +70,5 @@ html{scroll-padding-top:5rem}.site-main{padding:23px 16px 98px}
 .button-large{padding-inline:15px}.profile-facts{grid-template-columns:1fr;gap:11px}.chat-gig-link{font-size:9px}
 }
 @media(max-width:760px){.gig-detail-grid{grid-template-columns:1fr}}
+@media(max-width:760px){.support-layout{grid-template-columns:1fr}.support-contact-column{grid-template-columns:1fr 1fr}.support-privacy-note{grid-column:1/-1}.support-form-card,.support-contact-card{padding:18px}}
+@media(max-width:520px){.support-contact-column{grid-template-columns:1fr}.support-form-row{grid-template-columns:1fr;gap:2px}.support-heading{margin-bottom:21px}.support-form-card,.support-contact-card{border-radius:16px}.support-whatsapp-button{width:100%}}

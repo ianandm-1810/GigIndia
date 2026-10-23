@@ -9,6 +9,7 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const supportRoutes = require("./routes/supportRoutes");
 const rateLimit = require("express-rate-limit");
 const app = express();
 
@@ -42,12 +43,13 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/support", supportRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/gigs", gigRoutes);
 
 app.get("/", (req, res) => {
-  res.json({ message: "GigIndia API is running 🚀" });
+  res.json({ message: "GIGI India API is running 🚀" });
 });
 // Custom 404 — koi bhi route match nahi hua
 app.use((req, res) => {

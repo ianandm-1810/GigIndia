@@ -70,3 +70,25 @@
 .payment-status-icon{width:48px;height:48px;flex:0 0 auto;display:grid;place-items:center;border-radius:15px;color:var(--violet);background:var(--violet-soft)}
 .payment-status-panel h2{margin:0 0 8px;font-size:16px}.payment-status-panel p{margin:0 0 15px;color:var(--muted);font-size:12px;line-height:1.7}
 .payment-status-panel .button{width:fit-content}
+
+.support-page{padding-bottom:38px}
+.support-heading{margin-bottom:28px}
+.support-heading h1{max-width:780px}
+.support-layout{display:grid;grid-template-columns:minmax(270px,.78fr) minmax(0,1.22fr);gap:18px;align-items:start}
+.support-contact-column{display:grid;gap:14px}
+.support-contact-card,.support-form-card{padding:23px;border:1.5px solid var(--ink);border-radius:20px;background:var(--surface);box-shadow:var(--shadow-sm)}
+.support-contact-card{position:relative;overflow:hidden}
+.support-contact-card:first-child{background:var(--surface-soft)}
+.support-contact-card h2,.support-form-heading h2{margin:3px 0 8px;font-size:20px;letter-spacing:-.04em}
+.support-contact-card>p:not(.eyebrow){margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+.support-icon{width:39px;height:39px;display:grid;place-items:center;margin-bottom:17px;border:1.5px solid var(--ink);border-radius:12px;color:var(--ink);background:var(--pink);box-shadow:2px 3px 0 var(--ink)}
+.support-whatsapp-button{display:inline-flex;width:fit-content;gap:8px;margin-top:17px;text-decoration:none}
+.support-privacy-note{display:flex;align-items:flex-start;gap:9px;margin:0;padding:5px 3px;color:var(--muted);font-size:10px;line-height:1.65}
+.support-privacy-note svg{flex:0 0 auto;color:var(--violet)}
+.support-form-heading{margin-bottom:19px}
+.support-form-heading .eyebrow,.support-contact-card .eyebrow{margin:0 0 7px;color:var(--violet);font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.support-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.support-message-input{min-height:145px;resize:vertical;line-height:1.6}
+.support-form-card .button{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.support-form-card .success-panel{padding:20px}
+.support-form-card .success-panel a{display:inline-block;margin-top:12px;color:var(--violet);font-size:12px;font-weight:750;text-decoration:none}

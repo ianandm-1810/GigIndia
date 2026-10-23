@@ -73,11 +73,12 @@ body {
 .site-header { z-index: 30; border-bottom: 1.5px solid var(--ink); background: color-mix(in srgb,var(--bg) 94%,transparent); box-shadow: 0 3px 0 color-mix(in srgb,var(--ink) 4%,transparent); }
 .header-inner { min-height: 72px; }
 .brand-lockup { gap: 9px; }
-.brand-mark { position: relative; overflow: hidden; width: 38px; height: 38px; border: 2px solid var(--ink); border-radius: 11px; color: #fff; background: var(--ink); box-shadow: 3px 3px 0 var(--pink); font-family: var(--display-font); font-size: 23px; font-weight: 400; letter-spacing: -3px; }
+.brand-mark { position: relative; overflow: hidden; width: 38px; height: 38px; border: 2px solid var(--ink); border-radius: 11px; color: #fff; background: var(--ink); box-shadow: 3px 3px 0 var(--pink); font-family: 'DM Sans',sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -.06em; padding: 0; }
 .brand-mark span { color: var(--yellow); }
-.brand-mark::after { position: absolute; top: -5px; right: 8px; width: 5px; height: 47px; border: 1px solid var(--ink); border-radius: 6px; background: var(--pink); content: ''; transform: rotate(28deg); }
-.brand-word { color: var(--ink); font-family: var(--display-font); font-size: 17px; font-weight: 400; letter-spacing: -.035em; }
-.brand-word span { color: var(--muted); font-family: 'DM Sans',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: .13em; }
+.brand-mark::after { position: absolute; top: -5px; right: 4px; width: 4px; height: 47px; border: 1px solid var(--ink); border-radius: 6px; background: var(--pink); content: ''; transform: rotate(28deg); }
+.brand-word { display: flex; align-items: baseline; gap: 4px; color: var(--ink); font-family: 'DM Sans',sans-serif; font-size: 15px; font-weight: 950; letter-spacing: -.055em; white-space: nowrap; }
+.brand-word .brand-name { color: inherit; font: inherit; letter-spacing: inherit; }
+.brand-word span { color: var(--muted); font-family: 'DM Sans',sans-serif; font-size: 11px; font-weight: 750; letter-spacing: -.02em; }
 /* Keep the wordmark legible in both themes. */
 :root:not([data-theme='dark']) .brand-word { color: #111014; }
 :root:not([data-theme='dark']) .brand-word span { color: #625e68; }
@@ -175,7 +176,7 @@ body {
 
 :root[data-theme='dark'] body { background-image: radial-gradient(color-mix(in srgb,var(--ink) 13%,transparent) .75px,transparent .75px); }
 :root[data-theme='dark'] .announcement-strip { color: #101014; }
-:root[data-theme='dark'] .brand-mark { color: #fff; }
+:root[data-theme='dark'] .brand-mark { color: #111014; background: #fffaf5; }
 :root[data-theme='dark'] .brand-word { color: #fffaf5; }
 :root[data-theme='dark'] .brand-word span { color: #d0c7d2; }
 :root[data-theme='dark'] .button-primary { color: #17131b; }
