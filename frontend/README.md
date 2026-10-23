@@ -1,6 +1,6 @@
 # GIGI India frontend
 
-Mobile-first React app for the GigIndia student freelance marketplace. The UI uses the existing Express API and keeps product limitations visible instead of implying features the API does not provide.
+Mobile-first React app for the GIGI India student freelance marketplace. The UI uses the existing Express API and keeps product limitations visible instead of implying features the API does not provide.
 
 ## Run locally
 

@@ -26,7 +26,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <AuthPanel eyebrow="Account recovery" title="Choose a fresh password." description="Create a new password for your GigIndia account." footer={<Link to="/forgot-password">Request another reset link</Link>}>
+    <AuthPanel eyebrow="Account recovery" title="Choose a fresh password." description="Create a new password for your GIGI India account." footer={<Link to="/forgot-password">Request another reset link</Link>}>
       <div className="auth-form-heading"><p className="eyebrow">Secure your account</p><h2>Reset password</h2><p>Use at least 8 characters, including uppercase, lowercase, a number, and a special character.</p></div>
       <form className="form-stack" onSubmit={submit}>{error && <div className="form-alert" role="alert">{error}</div>}<Field label="New password" id="reset-password" type="password" autoComplete="new-password" minLength="8" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" value={password} onChange={(event) => setPassword(event.target.value)} required /><Button type="submit" size="large" loading={loading}>Save new password</Button></form>
     </AuthPanel>

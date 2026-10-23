@@ -60,7 +60,7 @@ export default function HomePage() {
           <h2>Small projects.<br /><span>Real momentum.</span></h2>
         </Reveal>
         <Reveal className="intro-aside">
-          <p>GigIndia helps college students take the first step into freelance work. Find a project, tell a client how you can help, and build a portfolio with work you actually did.</p>
+          <p>GIGI India helps college students take the first step into freelance work. Find a project, tell a client how you can help, and build a portfolio with work you actually did.</p>
           <Link className="arrow-link" to="/about">See how it works <ArrowUpRight size={17} /></Link>
         </Reveal>
       </section>
@@ -85,7 +85,7 @@ export default function HomePage() {
 
       <section className="feature-band">
         <div className="feature-band-inner section-wrap">
-          <Reveal className="feature-copy"><p className="eyebrow eyebrow-light">Made for the in-between</p><h2>Build experience<br />while you're still <span>becoming.</span></h2><p>College is a great time to experiment. GigIndia gives your curiosity a place to turn into practical experience—on a schedule that can fit around classes.</p><Button to={user ? '/browse-gigs' : '/register'} variant="light" size="large">{user ? 'Browse gigs' : 'Find your first project'} <ArrowUpRight size={17} /></Button></Reveal>
+          <Reveal className="feature-copy"><p className="eyebrow eyebrow-light">Made for the in-between</p><h2>Build experience<br />while you're still <span>becoming.</span></h2><p>College is a great time to experiment. GIGI India gives your curiosity a place to turn into practical experience—on a schedule that can fit around classes.</p><Button to={user ? '/browse-gigs' : '/register'} variant="light" size="large">{user ? 'Browse gigs' : 'Find your first project'} <ArrowUpRight size={17} /></Button></Reveal>
           <Reveal className="feature-visual"><div className="feature-orbit" /><div className="feature-card"><div className="feature-card-head"><span className="feature-dot" /><span>THE GIG FLOW</span><span className="feature-menu">•••</span></div><div className="flow-item"><span className="flow-index">01</span><span className="flow-icon violet"><Compass size={17} /></span><div><strong>Explore</strong><small>Find a project that fits</small></div><Check size={16} className="flow-check" /></div><div className="flow-connector" /><div className="flow-item"><span className="flow-index">02</span><span className="flow-icon aqua"><BriefcaseBusiness size={17} /></span><div><strong>Propose</strong><small>Share your plan</small></div><span className="flow-current">NEXT</span></div><div className="flow-connector" /><div className="flow-item flow-muted"><span className="flow-index">03</span><span className="flow-icon mint"><Sparkles size={17} /></span><div><strong>Deliver</strong><small>Build your experience</small></div></div><div className="feature-card-footer"><span>One clear next step.</span><ArrowRight size={15} /></div></div></Reveal>
         </div>
       </section>

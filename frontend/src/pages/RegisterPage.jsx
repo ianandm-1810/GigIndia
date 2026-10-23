@@ -25,7 +25,7 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       const user = await register(form)
-      showToast('Your GigIndia account is ready.')
+      showToast('Your GIGI India account is ready.')
       navigate(user.role === 'client' ? '/client' : '/student', { replace: true })
     } catch (requestError) {
       setError(getErrorMessage(requestError, 'Could not create your account. Please try again.'))

@@ -4,7 +4,7 @@ import { formatDate, formatRupees } from '../../utils/format.js'
 import Badge from '../common/Badge.jsx'
 
 export default function GigCard({ gig }) {
-  const clientName = gig.client?.name || 'GigIndia client'
+  const clientName = gig.client?.name || 'GIGI India client'
   const initial = clientName.trim().slice(0, 1).toUpperCase()
 
   return (

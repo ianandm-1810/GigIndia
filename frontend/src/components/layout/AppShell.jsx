@@ -46,7 +46,7 @@ export default function AppShell() {
         <div className="header-inner">
           <Link className="brand-lockup" to="/" aria-label="GIGI India home">
             <span className="brand-mark">g<span>i</span></span>
-            <span className="brand-word">GIGI<span>INDIA</span></span>
+            <span className="brand-word">GIGI<span>India</span></span>
           </Link>
           <button className="icon-button mobile-menu-toggle" type="button" aria-expanded={menuOpen} aria-controls="primary-navigation" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} onClick={() => setMenuOpen((open) => !open)}>
             {menuOpen ? <X size={21} /> : <Menu size={21} />}
@@ -79,7 +79,7 @@ export default function AppShell() {
       </main>
       <footer className="site-footer">
         <div className="footer-inner">
-          <Link className="brand-lockup footer-brand" to="/" aria-label="GIGI India home"><span className="brand-mark">g<span>i</span></span><span className="brand-word">GIGI<span>INDIA</span></span></Link>
+          <Link className="brand-lockup footer-brand" to="/" aria-label="GIGI India home"><span className="brand-mark">g<span>i</span></span><span className="brand-word">GIGI<span>India</span></span></Link>
           <p>Small projects. Real momentum.</p>
           <div className="footer-links"><Link to="/privacy-policy">Privacy</Link><Link to="/terms">Terms</Link><Link to="/about">How it works</Link></div>
           <small>© {currentYear} GIGI India</small>

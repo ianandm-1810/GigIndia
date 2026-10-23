@@ -78,6 +78,9 @@ body {
 .brand-mark::after { position: absolute; top: -5px; right: 8px; width: 5px; height: 47px; border: 1px solid var(--ink); border-radius: 6px; background: var(--pink); content: ''; transform: rotate(28deg); }
 .brand-word { color: var(--ink); font-family: var(--display-font); font-size: 17px; font-weight: 400; letter-spacing: -.035em; }
 .brand-word span { color: var(--muted); font-family: 'DM Sans',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: .13em; }
+/* Keep the wordmark legible in both themes. */
+:root:not([data-theme='dark']) .brand-word { color: #111014; }
+:root:not([data-theme='dark']) .brand-word span { color: #625e68; }
 .desktop-nav a,.footer-links a { color: var(--ink); font-size: 12px; font-weight: 750; }
 .desktop-nav a:hover,.desktop-nav a.active,.footer-links a:hover { color: var(--violet); }
 .header-actions { gap: 12px; }
@@ -139,6 +142,16 @@ body {
 .role-option { border: 1.5px solid var(--ink); border-radius: 13px; }
 .role-option:hover,.role-option.selected { border-color: var(--ink); background: var(--yellow); }
 .role-option-icon { border: 1px solid var(--ink); color: var(--ink); background: var(--pink); }
+:root:not([data-theme='dark']) .role-option,
+:root:not([data-theme='dark']) .role-option strong { color: #111014; }
+:root:not([data-theme='dark']) .role-option small { color: #514b55; }
+:root[data-theme='dark'] .role-option { color: #fffaf5; }
+:root[data-theme='dark'] .role-option:hover,
+:root[data-theme='dark'] .role-option.selected { color: #111014; }
+:root[data-theme='dark'] .role-option:hover strong,
+:root[data-theme='dark'] .role-option.selected strong { color: #111014; }
+:root[data-theme='dark'] .role-option:hover small,
+:root[data-theme='dark'] .role-option.selected small { color: #514b55; }
 .success-panel { border: 1.5px solid var(--success); }
 
 .filter-panel { border: 1.5px solid var(--ink); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-sm); }
@@ -163,7 +176,8 @@ body {
 :root[data-theme='dark'] body { background-image: radial-gradient(color-mix(in srgb,var(--ink) 13%,transparent) .75px,transparent .75px); }
 :root[data-theme='dark'] .announcement-strip { color: #101014; }
 :root[data-theme='dark'] .brand-mark { color: #fff; }
-:root[data-theme='dark'] .brand-word { color: var(--ink); }
+:root[data-theme='dark'] .brand-word { color: #fffaf5; }
+:root[data-theme='dark'] .brand-word span { color: #d0c7d2; }
 :root[data-theme='dark'] .button-primary { color: #17131b; }
 :root[data-theme='dark'] .button-primary:hover:not(:disabled) { color: #17131b; }
 :root[data-theme='dark'] .auth-aside { color: #111014; }
