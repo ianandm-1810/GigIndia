@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "./base.css";
+@import "./landing.css";
+@import "./pages.css";
+@import "./responsive.css";
+@import "./details.css";
+@import "./brand-theme.css";
