@@ -15,6 +15,12 @@ const insightsRoutes = require("./routes/insightsRoutes");
 const rateLimit = require("express-rate-limit");
 const app = express();
 
+// Render sits behind a reverse proxy. Trust its forwarded client IP in production
+// so rate limiting sees the real visitor instead of treating everyone as one IP.
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 // Security middleware
 app.use(helmet());
 // Rate limiting — 100 requests per 15 minutes per IP

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, ExternalLink, Github, Instagram, Linkedin, Link as LinkIcon, Star, UserRound } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Link as LinkIcon, Star, UserRound } from 'lucide-react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import Button from '../components/common/Button.jsx'
 import Card from '../components/common/Card.jsx'
@@ -9,9 +9,9 @@ import apiClient from '../services/apiClient.js'
 import { getErrorMessage } from '../utils/errors.js'
 
 const socialItems = [
-  ['github', 'GitHub', Github],
-  ['linkedin', 'LinkedIn', Linkedin],
-  ['instagram', 'Instagram', Instagram],
+  ['github', 'GitHub', LinkIcon],
+  ['linkedin', 'LinkedIn', LinkIcon],
+  ['instagram', 'Instagram', LinkIcon],
   ['discord', 'Discord', LinkIcon],
 ]
 

@@ -248,7 +248,7 @@ io.on("connection", (socket) => {
 
 // Connect DB then start server
 connectDB().then(() => {
-  server.listen(PORT, () => {
+  server.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT} 🚀`);
   });
   // Recover interrupted refunds and refresh the status of admin-approved payouts.
