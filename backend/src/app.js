@@ -14,6 +14,7 @@ const studentChatRoutes = require("./routes/studentChatRoutes");
 const insightsRoutes = require("./routes/insightsRoutes");
 const rateLimit = require("express-rate-limit");
 const app = express();
+app.set("trust proxy", 1);
 
 // Render sits behind a reverse proxy. Trust its forwarded client IP in production
 // so rate limiting sees the real visitor instead of treating everyone as one IP.
