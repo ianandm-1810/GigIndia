@@ -6,6 +6,9 @@ import Field from '../components/common/Field.jsx'
 import apiClient from '../services/apiClient.js'
 import { getErrorMessage } from '../utils/errors.js'
 
+// Render Free may need close to a minute to wake after being idle.
+const RESET_REQUEST_TIMEOUT_MS = 90000
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
@@ -17,7 +20,7 @@ export default function ForgotPasswordPage() {
     setLoading(true)
     setError('')
     try {
-      await apiClient.post('/auth/forgot-password', { email })
+      await apiClient.post('/auth/forgot-password', { email }, { timeout: RESET_REQUEST_TIMEOUT_MS })
       setSent(true)
     } catch (requestError) {
       setError(getErrorMessage(requestError, 'Could not send the reset email.'))
